@@ -18,7 +18,7 @@ pos_y = 200
 
 clock = pygame.time.Clock()
 chapter = Chapter(1)  # chapter 1 설정
-screen.blit(pygame.image.load(chapter.background), (0, 0))  # 배경 설정
+  # 배경 설정
 
 while True:
     clock.tick(60)
