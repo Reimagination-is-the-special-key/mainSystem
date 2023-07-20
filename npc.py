@@ -25,6 +25,8 @@ manager = pygame_gui.UIManager((screen_width, screen_height))
 # Define font properties
 font = pygame.font.SysFont('휴먼둥근헤드라인',24)
 
+font2 = pygame.font.SysFont('휴먼둥근헤드라인',12)
+
 # Player properties
 player = pygame.image.load("npc.png")
 player = pygame.transform.scale(player, (80, 100))
@@ -34,14 +36,15 @@ player_Rect.x = 400
 player_Rect.y = 400
 
 # Enemy properties
-class NPC:
-    def __init__(self, manager, screen, text="안녕하세요! 저는 최윤종이에요. 오늘 날씨가 좋네요!", img="npc.png"):
+class npc:
+    def __init__(self, manager, screen, txt2, txt):
+
         self.screen = screen
+        self.txt = txt
         self.manager = manager
         self.dialogue_box_ = False
 
-        self.img = img
-        self.npc = pygame.transform.scale(pygame.image.load(img), (80, 100))
+        self.npc = pygame.transform.scale(pygame.image.load("npc.png"), (80, 100))
         self.npc_speed = 2
         self.npc_Rect = self.npc.get_rect()
         self.npc_Rect.x = 400
@@ -58,27 +61,30 @@ class NPC:
         self.dialogue_box_Rect = self.dialogue_box.get_rect()
         self.dialogue_box_Rect.x = (screen_width - 700) // 2
         self.dialogue_box_Rect.y = (screen_height - 300) // 2
-        self.rendered_text = font.render(text, True, BLACK)  # npc가 띄울 문구
+        self.rendered_text = font.render(txt, True, BLACK)
+        self.rendered_text2 = font2.render(txt2, True, BLACK)  # npc가 띄울 문구
         self.text_rect = self.rendered_text.get_rect(center=(self.dialogue_box_Rect.x + 700 // 2,
                                         self.dialogue_box_Rect.y + 300 // 2))
+        
         self.button = pygame_gui.elements.UIButton(
-relative_rect=pygame.Rect(self.button_x, self.button_y, 100, 30),
-text='Click Me',
-manager=manager
-)
-
-
+            relative_rect=pygame.Rect(self.button_x, self.button_y, 100, 30),
+            text='Click Me',
+            manager=manager
+            )
     def progress(self, event):
         if pygame.Rect(player_Rect.x, player_Rect.y, 80, 100).colliderect(pygame.Rect(self.npc_Rect.x, self.npc_Rect.y, 80, 100)):
+            self.stop()
+            self.npc = pygame.transform.scale(pygame.image.load("npc2.png"), (80, 100))
             self.manager.update(pygame.time.get_ticks() / 1000.0)
             self.manager.draw_ui(screen)
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    self.stop()
                     self.button_ = True
                     self.dialogue_box_ = True
         else:
             self.button_ =False
+            self.start()
+            self.npc = pygame.transform.scale(pygame.image.load("npc.png"), (80, 100))
 
         if self.button_:
             self.manager.update(pygame.time.get_ticks() / 1000.0)
@@ -87,6 +93,7 @@ manager=manager
         if self.dialogue_box_:
             screen.blit(self.dialogue_box, self.dialogue_box_Rect)
             screen.blit(self.rendered_text, self.text_rect)
+            screen.blit(self.rendered_text2, (100, 200))
             self.stop() 
 
         if self.npc_moving:  # npc_moving이 True일 때만 움직입니다.
@@ -114,26 +121,35 @@ clock = pygame.time.Clock()
 
 # Dialogue box properties
 
-npc1 = NPC(manager, screen)
+npc1 = npc(manager, screen, "최윤종", "안녕하세요! 저는 최윤종이에요. 여자랑은 말을 못해요")
+npc2 = npc(manager, screen, "천지홍", """안녕하세요! 저는 호플리스에요. 
+얼마 전에 헤어졌어요. 희망이 없어요...""")
+npc2.npc_Rect.x += 200
 
 
 while running:
     for event in pygame.event.get():
         if event.type == QUIT:
             running = False
-        manager.process_events(event)
+        npc1.manager.process_events(event)
+        npc2.manager.process_events(event)
 
     if event.type == pygame.KEYDOWN: # 키가 눌리면
         if event.key == pygame.K_RETURN: # 키가 눌린 값이 엔터값이면
-            npc1.dialogue_box_ = False
-            k = False
-            player_speed = 3
-            npc1.start()
+            if npc1.dialogue_box_ or npc2.dialogue_box_:
+                npc1.dialogue_box_ = False
+                npc2.dialogue_box_ = False
+                player_speed = 3
+                npc1.start()
+                npc2.start()
 
     keys = pygame.key.get_pressed()
 
     npc1.button.rect.x = npc1.npc_Rect.x
-    npc1.button.rect.y = npc1.npc_Rect.y
+    npc1.button.rect.y = npc1.npc_Rect.y+100
+
+    npc2.button.rect.x = npc2.npc_Rect.x
+    npc2.button.rect.y = npc2.npc_Rect.y+100
     
     # Player movement
     if keys[K_a] and player_Rect.x > 0:
@@ -151,8 +167,10 @@ while running:
 
     screen.blit(player, player_Rect)
     screen.blit(npc1.npc, npc1.npc_Rect)
+    screen.blit(npc2.npc, npc2.npc_Rect)
 
     npc1.progress(event)
+    npc2.progress(event)
     pygame.display.flip()
     clock.tick(60)
 pygame.quit()
