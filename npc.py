@@ -37,7 +37,7 @@ player_Rect.y = 400
 
 # Enemy properties
 class npc:
-    def __init__(self, manager, screen, txt2, txt):
+    def __init__(self, manager, screen, name, txt):
 
         self.screen = screen
         self.txt = txt
@@ -62,7 +62,7 @@ class npc:
         self.dialogue_box_Rect.x = (screen_width - 700) // 2
         self.dialogue_box_Rect.y = (screen_height - 300) // 2
         self.rendered_text = font.render(txt, True, BLACK)
-        self.rendered_text2 = font2.render(txt2, True, BLACK)  # npc가 띄울 문구
+        self.rendered_name = font2.render(name, True, BLACK)  # npc가 띄울 문구
         self.text_rect = self.rendered_text.get_rect(center=(self.dialogue_box_Rect.x + 700 // 2,
                                         self.dialogue_box_Rect.y + 300 // 2))
         
@@ -70,13 +70,13 @@ class npc:
             relative_rect=pygame.Rect(self.button_x, self.button_y, 100, 30),
             text='Click Me',
             manager=manager
-            )
+            ) # 버튼 만들기
     def progress(self, event):
         if pygame.Rect(player_Rect.x, player_Rect.y, 80, 100).colliderect(pygame.Rect(self.npc_Rect.x, self.npc_Rect.y, 80, 100)):
             self.stop()
             self.npc = pygame.transform.scale(pygame.image.load("npc2.png"), (80, 100))
             self.manager.update(pygame.time.get_ticks() / 1000.0)
-            self.manager.draw_ui(screen)
+            self.manager.draw_ui(screen) # 버튼 그리기
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     self.button_ = True
@@ -93,7 +93,7 @@ class npc:
         if self.dialogue_box_:
             screen.blit(self.dialogue_box, self.dialogue_box_Rect)
             screen.blit(self.rendered_text, self.text_rect)
-            screen.blit(self.rendered_text2, (100, 200))
+            screen.blit(self.rendered_name, (100, 200))
             self.stop() 
 
         if self.npc_moving:  # npc_moving이 True일 때만 움직입니다.
@@ -122,8 +122,7 @@ clock = pygame.time.Clock()
 # Dialogue box properties
 
 npc1 = npc(manager, screen, "최윤종", "안녕하세요! 저는 최윤종이에요. 여자랑은 말을 못해요")
-npc2 = npc(manager, screen, "천지홍", """안녕하세요! 저는 호플리스에요. 
-얼마 전에 헤어졌어요. 희망이 없어요...""")
+npc2 = npc(manager, screen, "호플리스", """안녕하세요! 저는 호플리스에요. 이젠 희망이 없어요...""")
 npc2.npc_Rect.x += 200
 
 
