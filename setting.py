@@ -49,7 +49,10 @@ class Settings(pg.sprite.Sprite):
         self.chapter.save()
 
     def open_dev(self):
-        self.image = pg.image.load('./data/imgs/dev.png')
+        self.image = pg.transform.scale(pg.image.load('./data/imgs/dev.png'), (800, 400))
+
+    def open_setting(self):
+        self.image = pg.transform.scale(pg.image.load('./data/imgs/setting.png'), (800, 400))
 
     def update(self):
         self.x = self.rect.x
