@@ -1,6 +1,7 @@
 # Import necessary libraries
 import pygame
 from pygame.locals import *
+from pygame.sprite import _Group
 import pygame_gui
 import os
 import random
@@ -45,6 +46,25 @@ class Player(pygame.sprite.Sprite):
         self.rect.centerx = player_posX
         self.rect.centery = player_posY
         self.speed = 4
+
+class Building(pygame.sprite.Sprite):
+    def __init__(self, game):
+        pygame.sprite.Sprite.__init__(self, self.group)
+        self.game = game
+
+        self.image = pygame.image.load('data\imgs\building.png')
+        self.image = pygame.transform(self.image, (30, 100))
+        self.rect = self.image.get_rect()
+        self.rect.centerx = 150
+        self.rect.centery = 150
+        self.intact = False # 건물 상태(True : 정상, False : 무너짐)
+
+        def update(self):
+        # 건물 상태에 따라 이미지 변경
+            if self.intact:
+                self.image = pygame.image.load("data\imgs\building.png")
+            else:
+                self.image = pygame.image.load("data\imgs\broken_building.png")
 
 # Define font properties
 font = pygame.font.SysFont('휴먼둥근헤드라인',24)
